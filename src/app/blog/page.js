@@ -1,10 +1,19 @@
+// 'use client'
 import getDomain from "@/app/lib/getDomain";
+
+// fetch caching options
+
+// force-cache
+
+// revalidate: n seconds
+// no-store
 
 async function getData() {
   // 1 endpoint - API?
   const domain = getDomain();
   const endpoint = `${domain}/api/posts`; // -> third party api request??
-  const res = await fetch(endpoint, { next: { revalidate: 10 } }); // HTTP GET
+  // const res = await fetch(endpoint, {next: {revalidate: 10 }}) // HTTP GET
+  const res = await fetch(endpoint, { cache: "no-store" }); // HTTP GET
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
@@ -33,4 +42,3 @@ export default async function BlogPage() {
   );
 }
 
-export const dynamic = "force-dynamic";

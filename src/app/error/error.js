@@ -13,7 +13,7 @@ export default function Error({ error, reset }) {
     }
 
     return <div>
-        <h2>Something went wrong!</h2>
+        <h2>Openai is not working. Try again!</h2>
         <button onClick={retryRequestHandler}>Retry request</button>
     </div>
 }
