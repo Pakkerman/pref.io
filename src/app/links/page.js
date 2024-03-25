@@ -1,4 +1,3 @@
-import Image from "next/image";
 import LinksCreateForm from "./createForm";
 
 export default function Links() {
