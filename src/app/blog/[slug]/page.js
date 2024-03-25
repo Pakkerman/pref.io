@@ -1,8 +1,9 @@
 export default function BlogPostDetail(params) {
   console.log(params);
+
   return (
     <main>
-      <h1>hello</h1>
+      <h1>Hello Detail View</h1>
     </main>
   );
 }
