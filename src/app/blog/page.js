@@ -1,5 +1,6 @@
 import getDomain from "@/app/lib/getDomain";
 import Card from "@/app/blog/card";
+import { helloWorld } from "@/app/lib/db";
 
 async function getData() {
   // 1 endpoint - API?
@@ -22,9 +23,11 @@ export default async function BlogPage() {
   // const data = await getData();
   // const items = data && data.items ? [...data.items] : [];
 
+  const dbHello = await helloWorld();
   return (
     <main>
       <h1>Hello World</h1>
+      <p>DB Response : {JSON.stringify(dbHello)}</p>
       <p>Posts:</p>
       {/* {items && */}
       {/*   items.map((item, idx) => { */}
@@ -37,3 +40,6 @@ export default async function BlogPage() {
     </main>
   );
 }
+
+export const runtime = "edge";
+export const preferredRegion = "sin1";
