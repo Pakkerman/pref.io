@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   timestamp,
   text,
@@ -5,6 +6,7 @@ import {
   serial,
   varchar,
   uniqueIndex,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const LinksTable = pgTable(
@@ -21,3 +23,22 @@ export const LinksTable = pgTable(
     };
   },
 );
+
+export const LinksTableRelations = relations(LinksTable, ({ many }) => ({
+  visits: many(VisitsTable),
+}));
+
+export const VisitsTable = pgTable("visits", {
+  id: serial("id").primaryKey().notNull(),
+  linkId: integer("link_id")
+    .notNull()
+    .references(() => LinksTable.id),
+  createAt: timestamp("create_at").defaultNow(),
+});
+
+export const VisitsTableRelations = relations(VisitsTable, ({ one }) => ({
+  link: one(LinksTable, {
+    fields: [VisitsTable.linkId],
+    references: [LinksTable.id],
+  }),
+}));
