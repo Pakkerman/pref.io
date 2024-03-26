@@ -1,9 +1,11 @@
-import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon, neonConfig } from "@neondatabase/serverless";
+import { LinksTable } from "./schema";
 
 const sql = neon(process.env.DATABASE_URL);
+neonConfig.fetchConnectionCache = true;
 
-// console.log(sql`SELECTO NOW()`);
-//
+const db = drizzle(sql);
 
 export async function helloWorld() {
   const start = new Date();
@@ -11,4 +13,32 @@ export async function helloWorld() {
   const dbNow = dbResponse && dbResponse.now ? dbResponse.now : "";
   const end = new Date();
   return { dbNow: dbNow, latency: Math.abs(end - start) };
+}
+
+async function configureDatabase() {
+  const dbResponse = await sql`CREATE TABLE IF NOT EXISTS "links" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"url" text NOT NULL,
+	"short" varchar(50),
+	"create_at" timestamp DEFAULT now());
+`;
+
+  console.log("create table response", dbResponse);
+}
+
+configureDatabase().catch((err) => console.log("db configure error", err));
+
+export async function addLink(url) {
+  const newLink = { url };
+  return await db.insert(LinksTable).values(newLink).returning();
+}
+
+export async function getLinks(limit, offset) {
+  const lookupLimit = limit ? limit : 10;
+  const lookupOffset = offset ? offset : 0;
+  return await db
+    .select()
+    .from(LinksTable)
+    .limit(lookupLimit)
+    .offset(lookupOffset);
 }

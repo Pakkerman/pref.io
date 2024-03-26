@@ -28,7 +28,10 @@ export default function LinksCreateForm() {
 
   return (
     <>
-      <form className="flex flex-col " onSubmit={handleForm}>
+      <form
+        className="flex flex-col justify-between items-center h-full"
+        onSubmit={handleForm}
+      >
         <input
           className="text-black"
           type="text"
@@ -37,7 +40,7 @@ export default function LinksCreateForm() {
           placeholder="Enter you url to be shorten"
         />
         <button type="submit">Shorten</button>
-        {JSON.stringify(results)}
+        <pre>{JSON.stringify(results, null, 4)}</pre>
       </form>
     </>
   );
