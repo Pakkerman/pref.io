@@ -32,7 +32,20 @@ configureDatabase().catch((err) => console.log("db configure error", err));
 export async function addLink(url) {
   const short = randomShortStrings();
   const newLink = { url, short };
-  return await db.insert(LinksTable).values(newLink).returning();
+
+  let response = { message: `${url} is not valid, please try again` };
+  let responseStatus = 400;
+  try {
+    response = await db.insert(LinksTable).values(newLink).returning();
+    responseStatus = 201;
+  } catch ({ name, message }) {
+    console.log(`${name}: ${message}`);
+    if (message.includes("duplicate")) {
+      response = { message: `${url} has alread been added` };
+    }
+  }
+
+  return { data: response, status: responseStatus };
 }
 
 export async function getLinks(limit, offset) {

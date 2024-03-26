@@ -30,5 +30,9 @@ export async function POST(request) {
   }
 
   const dbResponse = await addLink(url);
-  return NextResponse.json(dbResponse, { status: 201 });
+  const responseData = dbResponse && dbResponse.data ? dbResponse.data : {};
+  const responseStatus =
+    dbResponse && dbResponse.status ? dbResponse.status : 500;
+
+  return NextResponse.json(responseData, { status: responseStatus });
 }
