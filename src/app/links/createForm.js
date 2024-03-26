@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function LinksCreateForm() {
+export default function LinksCreateForm({ didSubmit }) {
   const [results, setResults] = useState(null);
   const handleForm = async (event) => {
     event.preventDefault();
@@ -24,6 +24,7 @@ export default function LinksCreateForm() {
     const result = await response.json();
     console.log(result);
     setResults(result);
+    didSubmit();
   };
 
   return (

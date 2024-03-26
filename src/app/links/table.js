@@ -1,19 +1,32 @@
-import { getLinks } from "@/app/lib/db";
+"use client";
 
-export default async function LinksHTMLTable() {
-  const linksResponse = await getLinks();
+import LinksCreateForm from "./createForm";
+import useSWR from "swr";
+
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
+export default function LinksHTMLTable() {
+  const endpoint = "/api/links";
+  const { data, error, isLoading, mutate } = useSWR(endpoint, fetcher);
+
+  if (error) return "something is wrong";
+  if (isLoading) return "Loading...";
+
   return (
-    <div>
-      <h1>Links List</h1>
+    <>
+      <LinksCreateForm didSubmit={mutate} />
       <ul>
-        {linksResponse &&
-          linksResponse.map((item, idx) => (
-            <li key={`link-${idx}`}>
-              <p>{item.id}</p>
-              <p>{item.url}</p>
-            </li>
-          ))}
+        {data &&
+          data.map((item) => {
+            return (
+              <li key={item.id}>
+                <p>{item.id}</p>
+                <p>{item.url}</p>
+                <p>{item.short}</p>
+              </li>
+            );
+          })}
       </ul>
-    </div>
+    </>
   );
 }
