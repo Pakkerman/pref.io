@@ -22,10 +22,9 @@ async function configureDatabase() {
 	"id" serial PRIMARY KEY NOT NULL,
 	"url" text NOT NULL,
 	"short" varchar(50),
-	"create_at" timestamp DEFAULT now());
-`;
+	"create_at" timestamp DEFAULT now());`;
 
-  console.log("create table response", dbResponse);
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS "url_idx" ON "links" ((LOWER(url)));`;
 }
 
 configureDatabase().catch((err) => console.log("db configure error", err));
