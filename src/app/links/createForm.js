@@ -29,18 +29,20 @@ export default function LinksCreateForm({ didSubmit }) {
 
   return (
     <>
-      <form
-        className="flex flex-col justify-between items-center h-full"
-        onSubmit={handleForm}
-      >
+      <form className="flex flex-col gap-2 items-center" onSubmit={handleForm}>
         <input
-          className="text-black"
+          className="text-black w-full"
           type="text"
           name="url"
           defaultValue="https://github.com/pakkerman/pref.io"
           placeholder="Enter you url to be shorten"
         />
-        <button type="submit">Shorten</button>
+        <button
+          className="border-[0.5px] p-2 rounded-xl hover:bg-orange-900"
+          type="submit"
+        >
+          Shorten
+        </button>
         <pre>{JSON.stringify(results, null, 4)}</pre>
       </form>
     </>

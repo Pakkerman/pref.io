@@ -15,14 +15,15 @@ export default function LinksHTMLTable() {
   return (
     <>
       <LinksCreateForm didSubmit={mutate} />
-      <ul>
+
+      <ul className=" flex flex-col items-center">
         {data &&
           data.map((item) => {
             return (
               <li key={item.id}>
-                <p>{item.id}</p>
-                <p>{item.url}</p>
-                <p>{item.short}</p>
+                <p>id: {item.id}</p>
+                <p>url: {item.url}</p>
+                <p>short: {item.short}</p>
               </li>
             );
           })}

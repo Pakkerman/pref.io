@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon, neonConfig } from "@neondatabase/serverless";
-import { LinksTable } from "./schema";
+import { LinksTable, VisitsTable } from "./schema";
 import { desc, eq } from "drizzle-orm";
 import randomShortStrings from "./randomShortStrings";
 
@@ -31,9 +31,10 @@ async function configureDatabase() {
 	"link_id" integer NOT NULL,
 	"create_at" timestamp DEFAULT now());`;
 
-  await sql`DO $$ BEGIN
+  await sql` DO $$ BEGIN
     ALTER TABLE "visits" ADD CONSTRAINT "visits_link_id_links_id_fk" FOREIGN KEY ("link_id") REFERENCES "links"("id") ON DELETE no action ON UPDATE no action;
-    EXCEPTION WHEN duplicate_object THEN null;
+    EXCEPTION
+    WHEN duplicate_object THEN null;
     END $$;`;
 }
 
@@ -74,4 +75,8 @@ export async function getShortLinkRecord(shortSlugValue) {
     .select()
     .from(LinksTable)
     .where(eq(LinksTable.short, shortSlugValue));
+}
+
+export async function saveLinkVisit(linkIdValue) {
+  return await db.insert(VisitsTable).values({ linkId: linkIdValue });
 }
