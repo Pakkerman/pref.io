@@ -1,13 +1,15 @@
-import { drizzle } from "drizzle-orm/neon-http";
 import { neon, neonConfig } from "@neondatabase/serverless";
-import { LinksTable, VisitsTable } from "./schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql as sqld } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/neon-http";
+import { getSessionUser } from "@/app/lib/session";
 import randomShortStrings from "./randomShortStrings";
+import * as schema from "./schema";
+import { LinksTable, VisitsTable } from "./schema";
 
 const sql = neon(process.env.DATABASE_URL);
 neonConfig.fetchConnectionCache = true;
 
-const db = drizzle(sql);
+const db = drizzle(sql, { schema });
 
 export async function helloWorld() {
   const start = new Date();
@@ -42,6 +44,8 @@ configureDatabase().catch((err) => console.log("db configure error", err));
 
 export async function addLink(url) {
   const short = randomShortStrings();
+  const user = await getSessionUser();
+  console.log(user);
   const newLink = { url, short };
 
   let response = { message: `${url} is not valid, please try again` };
@@ -79,4 +83,27 @@ export async function getShortLinkRecord(shortSlugValue) {
 
 export async function saveLinkVisit(linkIdValue) {
   return await db.insert(VisitsTable).values({ linkId: linkIdValue });
+}
+
+export async function getMinLinksVisits(limit = 10, offset = 0) {
+  return await db.query.LinksTable.findMany({
+    limit,
+    offset,
+    orderBy: [desc(LinksTable.createAt)],
+    columns: {
+      url: true,
+      short: true,
+      createAt: true,
+    },
+    with: {
+      visits: {
+        columns: {
+          createAt: true,
+        },
+      },
+    },
+    extras: {
+      count: sqld`count(${VisitsTable.id})`.as("count"),
+    },
+  });
 }

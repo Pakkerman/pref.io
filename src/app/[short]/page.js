@@ -19,7 +19,7 @@ async function triggleVisit(linkId) {
 
 export default async function ShortPage({ params }) {
   const { short } = params;
-  if (!short) notFound();
+  if (!short) notfound();
 
   const [record] = await getShortLinkRecord(short);
   if (!record) notFound();

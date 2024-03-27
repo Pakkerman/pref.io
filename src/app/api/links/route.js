@@ -1,10 +1,12 @@
-import { NextResponse } from "next/server";
+import { addLink, getLinks, getMinLinksVisits } from "@/app/lib/db";
 import isValidURL from "@/app/lib/isValidURL";
-import { getLinks } from "@/app/lib/db";
-import { addLink } from "@/app/lib/db";
+import { setSessionUser } from "@/app/lib/session";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
-  const links = await getLinks(100, 0);
+  await setSessionUser(1);
+
+  const links = await getMinLinksVisits(100, 0);
   return NextResponse.json(links, { status: 200 });
 }
 
