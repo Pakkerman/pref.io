@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "generateKey": "bun src/app/cli/generateKey.js",
     "migration": "bunx drizzle-kit generate:pg",
     "lint": "next lint"
   },
