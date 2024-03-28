@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1711364058578,
-      "tag": "0000_futuristic_secret_warriors",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1711437552548,
-      "tag": "0001_lush_chimera",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1711441667720,
-      "tag": "0002_panoramic_ozymandias",
+      "when": 1711590773603,
+      "tag": "0000_strange_stick",
       "breakpoints": true
     }
   ]

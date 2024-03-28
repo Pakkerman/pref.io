@@ -20,24 +20,38 @@ export async function helloWorld() {
 }
 
 async function configureDatabase() {
-  const dbResponse = await sql`CREATE TABLE IF NOT EXISTS "links" (
+  sql`CREATE TABLE IF NOT EXISTS "links" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"url" text NOT NULL,
 	"short" varchar(50),
-	"create_at" timestamp DEFAULT now());`;
+	"user_id" integer,
+	"created_at" timestamp DEFAULT now());`;
 
-  await sql`CREATE UNIQUE INDEX IF NOT EXISTS "url_idx" ON "links" ((LOWER(url)));`;
+  sql`CREATE TABLE IF NOT EXISTS "users" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"username" varchar(50) NOT NULL,
+	"password" varchar(75) NOT NULL,
+	"password" text NOT NULL,
+	"email" text,
+	"created_at" timestamp DEFAULT now());`;
 
-  await sql`CREATE TABLE IF NOT EXISTS "visits" (
+  sql`CREATE TABLE IF NOT EXISTS "visits" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"link_id" integer NOT NULL,
-	"create_at" timestamp DEFAULT now());`;
+	"created_at" timestamp DEFAULT now());`;
 
-  await sql` DO $$ BEGIN
-    ALTER TABLE "visits" ADD CONSTRAINT "visits_link_id_links_id_fk" FOREIGN KEY ("link_id") REFERENCES "links"("id") ON DELETE no action ON UPDATE no action;
-    EXCEPTION
-    WHEN duplicate_object THEN null;
-    END $$;`;
+  sql`CREATE UNIQUE INDEX IF NOT EXISTS "username_idx" ON "users" ("username");--> statement-breakpoint
+      DO $$ BEGIN
+      ALTER TABLE "links" ADD CONSTRAINT "links_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
+      EXCEPTION
+      WHEN duplicate_object THEN null;
+      END $$;`;
+
+  sql`DO $$ BEGIN
+      ALTER TABLE "visits" ADD CONSTRAINT "visits_link_id_links_id_fk" FOREIGN KEY ("link_id") REFERENCES "links"("id") ON DELETE no action ON UPDATE no action;
+      EXCEPTION
+      WHEN duplicate_object THEN null;
+      END $$;`;
 }
 
 configureDatabase().catch((err) => console.log("db configure error", err));
@@ -45,8 +59,13 @@ configureDatabase().catch((err) => console.log("db configure error", err));
 export async function addLink(url) {
   const short = randomShortStrings();
   const user = await getSessionUser();
-  console.log(user);
   const newLink = { url, short };
+
+  if (user) {
+    newLink["userId"] = user;
+  }
+
+  console.log(newLink);
 
   let response = { message: `${url} is not valid, please try again` };
   let responseStatus = 400;
@@ -71,7 +90,7 @@ export async function getLinks(limit, offset) {
     .from(LinksTable)
     .limit(lookupLimit)
     .offset(lookupOffset)
-    .orderBy(desc(LinksTable.createAt));
+    .orderBy(desc(LinksTable.createdAt));
 }
 
 export async function getShortLinkRecord(shortSlugValue) {
@@ -89,8 +108,9 @@ export async function getMinLinksVisits(limit = 10, offset = 0) {
   return await db.query.LinksTable.findMany({
     limit,
     offset,
-    orderBy: [desc(LinksTable.createAt)],
+    orderBy: [desc(LinksTable.createdAt)],
     columns: {
+      userId: true,
       url: true,
       short: true,
       createAt: true,
