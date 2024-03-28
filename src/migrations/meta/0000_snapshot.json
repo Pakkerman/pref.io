@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "54486484-0c21-4798-ad02-3b03e9abeb6a",
+  "id": "efdfec2c-1bca-4704-8d7f-442550cc049d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "links": {
@@ -69,9 +69,15 @@
           "primaryKey": true,
           "notNull": true
         },
+        "username": {
+          "name": "username",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "password": {
           "name": "password",
-          "type": "varchar(75)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -93,7 +99,7 @@
         "username_idx": {
           "name": "username_idx",
           "columns": [
-            "password"
+            "username"
           ],
           "isUnique": true
         }

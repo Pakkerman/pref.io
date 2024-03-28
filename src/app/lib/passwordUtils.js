@@ -25,6 +25,7 @@ export function isMatchingPassword(enteredPassword, storedHash) {
   return storedHash === hash;
 }
 
+// test
 function veryifyPasswordWorking() {
   const pw = "123";
   const hash = hashPassowrd(pw);
@@ -36,5 +37,3 @@ function veryifyPasswordWorking() {
   console.log(`right: ${right}`);
   console.log(`wrong: ${wrong}`);
 }
-
-veryifyPasswordWorking();

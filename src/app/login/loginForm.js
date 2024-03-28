@@ -24,7 +24,7 @@ export default function LoginForm({ didSubmit }) {
     const result = await response.json();
     console.log(result);
     setResults(result);
-    didSubmit();
+    if (didSubmit) didSubmit();
   };
 
   return (

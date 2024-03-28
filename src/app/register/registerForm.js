@@ -20,10 +20,11 @@ export default function RegisterForm({ didSubmit }) {
       body: jsonData,
     };
 
+    console.log("data", data);
     const response = await fetch(endpoint, options);
     const result = await response.json();
     setResults(result);
-    didSubmit();
+    if (didSubmit) didSubmit();
   };
 
   return (
@@ -50,7 +51,7 @@ export default function RegisterForm({ didSubmit }) {
         <input
           className="text-black w-full"
           type="password"
-          name="confirm"
+          name="passwordConfirm"
           placeholder="Confirm Password"
         />
         <button

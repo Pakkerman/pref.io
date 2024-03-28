@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS "links" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"password" varchar(75) NOT NULL,
+	"username" varchar(50) NOT NULL,
+	"password" text NOT NULL,
 	"email" text,
 	"created_at" timestamp DEFAULT now()
 );
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS "visits" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "username_idx" ON "users" ("password");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "username_idx" ON "users" ("username");--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "links" ADD CONSTRAINT "links_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION

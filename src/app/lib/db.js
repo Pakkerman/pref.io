@@ -4,7 +4,8 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { getSessionUser } from "@/app/lib/session";
 import randomShortStrings from "./randomShortStrings";
 import * as schema from "./schema";
-import { LinksTable, VisitsTable } from "./schema";
+import { UsersTable, LinksTable, VisitsTable } from "./schema";
+import { hashPassowrd } from "./passwordUtils";
 
 const sql = neon(process.env.DATABASE_URL);
 neonConfig.fetchConnectionCache = true;
@@ -30,7 +31,6 @@ async function configureDatabase() {
   sql`CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"username" varchar(50) NOT NULL,
-	"password" varchar(75) NOT NULL,
 	"password" text NOT NULL,
 	"email" text,
 	"created_at" timestamp DEFAULT now());`;
@@ -55,6 +55,44 @@ async function configureDatabase() {
 }
 
 configureDatabase().catch((err) => console.log("db configure error", err));
+
+export async function registerUser(newUserData) {
+  const { username, password, email } = newUserData;
+  const toInsertData = {
+    username: username,
+    password: hashPassowrd(password),
+  };
+
+  if (newUserData.email) {
+    toInsertData["email"] = email;
+  }
+
+  console.log("to be inserted:", toInsertData);
+
+  let response = { message: `Failed to register. Please try again.` };
+  let responseStatus = 400;
+  try {
+    let dbResponse = await db
+      .insert(UsersTable)
+      .values(toInsertData)
+      .returning();
+
+    dbResponse = dbResponse[0];
+    response = {
+      id: dbResponse.id,
+      username: dbResponse.username,
+      createdAt: dbResponse.createdAt,
+    };
+    responseStatus = 201;
+  } catch ({ message }) {
+    console.log(message);
+    if (message.includes("duplicate")) {
+      response = { message: `${username} is taken.` };
+    }
+  }
+
+  return { data: response, status: responseStatus };
+}
 
 export async function addLink(url) {
   const short = randomShortStrings();
