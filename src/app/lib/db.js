@@ -118,7 +118,7 @@ export async function getMinLinksVisits(limit = 10, offset = 0) {
     with: {
       visits: {
         columns: {
-          createAt: true,
+          createdAt: true,
         },
       },
     },
