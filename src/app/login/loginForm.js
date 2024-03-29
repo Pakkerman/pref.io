@@ -10,7 +10,7 @@ export default function LoginForm({ didSubmit }) {
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
     const jsonData = JSON.stringify(data);
-    const endpoint = "api/auth/register";
+    const endpoint = "api/auth/login";
 
     const options = {
       method: "POST",
@@ -21,8 +21,11 @@ export default function LoginForm({ didSubmit }) {
     };
 
     const response = await fetch(endpoint, options);
+    if (response.status === 200) {
+      window.location.href = "/";
+    }
+
     const result = await response.json();
-    console.log(result);
     setResults(result);
     if (didSubmit) didSubmit();
   };

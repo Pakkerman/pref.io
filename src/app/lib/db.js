@@ -120,6 +120,13 @@ export async function addLink(url) {
   return { data: response, status: responseStatus };
 }
 
+export async function getUserByUsername(username) {
+  return await db
+    .select()
+    .from(UsersTable)
+    .where(eq(UsersTable.username, username));
+}
+
 export async function getLinks(limit, offset) {
   const lookupLimit = limit ? limit : 10;
   const lookupOffset = offset ? offset : 0;
@@ -141,8 +148,25 @@ export async function getShortLinkRecord(shortSlugValue) {
 export async function saveLinkVisit(linkIdValue) {
   return await db.insert(VisitsTable).values({ linkId: linkIdValue });
 }
+// export async function getMinLinkAndVisits(limit = 10, offset = 0) {
+//   const sessionUser = await getSessionUser();
+//   return await db.query.LinksTable.findMany({
+//     limit,
+//     offset,
+//     orderBy: [desc(LinksTable.createdAt)],
+//     columns: {
+//       url: true,
+//       short: true,
+//       createdAt: true,
+//       userId: true,
+//     },
+//     where: eq(LinksTable.userId, sessionUser),
+//     with: { visits: { columns: { createdAt: true } } },
+//   });
+// }
 
 export async function getMinLinksVisits(limit = 10, offset = 0) {
+  const sessionUser = await getSessionUser();
   return await db.query.LinksTable.findMany({
     limit,
     offset,
@@ -153,6 +177,7 @@ export async function getMinLinksVisits(limit = 10, offset = 0) {
       short: true,
       createAt: true,
     },
+    where: eq(LinksTable.userId, sessionUser),
     with: {
       visits: {
         columns: {
