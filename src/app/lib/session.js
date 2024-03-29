@@ -53,15 +53,19 @@ export async function setSessionUser(userId) {
 }
 
 export async function getSessionUser() {
-  const cookieSessionValue = cookies().get("session_id").value;
+  const cookieSessionValue = cookies().get("session_id");
   if (!cookieSessionValue) {
     return null;
   }
 
-  const extractedUserId = await decodeUserSession(cookieSessionValue);
+  const extractedUserId = await decodeUserSession(cookieSessionValue.value);
   if (!extractedUserId) {
     return null;
   }
 
   return extractedUserId;
+}
+
+export async function endSessionForUser() {
+  cookies().delete("session_id");
 }
