@@ -1,11 +1,11 @@
+import { getSessionUser } from "@/app/lib/session";
 import { neon, neonConfig } from "@neondatabase/serverless";
 import { desc, eq, sql as sqld } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-http";
-import { getSessionUser } from "@/app/lib/session";
+import { hashPassowrd } from "./passwordUtils";
 import randomShortStrings from "./randomShortStrings";
 import * as schema from "./schema";
-import { UsersTable, LinksTable, VisitsTable } from "./schema";
-import { hashPassowrd } from "./passwordUtils";
+import { LinksTable, UsersTable, VisitsTable } from "./schema";
 
 const sql = neon(process.env.DATABASE_URL);
 neonConfig.fetchConnectionCache = true;
@@ -58,9 +58,10 @@ configureDatabase().catch((err) => console.log("db configure error", err));
 
 export async function registerUser(newUserData) {
   const { username, password, email } = newUserData;
+  const hashedPassword = await hashPassowrd(password);
   const toInsertData = {
     username: username,
-    password: hashPassowrd(password),
+    password: hashedPassword,
   };
 
   if (newUserData.email) {
@@ -148,6 +149,7 @@ export async function getShortLinkRecord(shortSlugValue) {
 export async function saveLinkVisit(linkIdValue) {
   return await db.insert(VisitsTable).values({ linkId: linkIdValue });
 }
+
 // export async function getMinLinkAndVisits(limit = 10, offset = 0) {
 //   const sessionUser = await getSessionUser();
 //   return await db.query.LinksTable.findMany({

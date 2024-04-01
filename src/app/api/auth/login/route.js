@@ -20,7 +20,10 @@ export async function POST(request) {
   const dbResponse = await getUserByUsername(username);
   const userRecord = dbResponse[0];
   const { id, password: storedUserHash } = userRecord;
-  const isValidPasswordRequest = isMatchingPassword(password, storedUserHash);
+  const isValidPasswordRequest = await isMatchingPassword(
+    password,
+    storedUserHash,
+  );
   console.log(isValidPasswordRequest);
   if (!isValidPasswordRequest) {
     return NextResponse.json(

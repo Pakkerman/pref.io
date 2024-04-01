@@ -1,7 +1,6 @@
 import * as jose from "jose";
 import { cookies } from "next/headers";
 
-// const secret = jose.base64url.decode(process.env.JOSE_SESSION_KEY);
 const secret = new TextEncoder().encode(process.env.JOSE_SESSION_KEY);
 const issuer = "urn:example:issuer";
 const audience = "urn:example:audience";
@@ -33,22 +32,8 @@ export async function decodeUserSession(jwt) {
   return null;
 }
 
-// testing
-// async function verifySession() {
-//   const userId = "1";
-//   const jwtToken = await encodeUserSession(userId);
-//   const payload = await decodeUserSession(jwtToken);
-//   const user = payload;
-//   console.log(user, payload, userId === user);
-// }
-//
-// verifySession()
-//   .then((res) => console.log("verify"))
-//   .catch((err) => console.log(err));
-//
 export async function setSessionUser(userId) {
   const newSessionValue = await encodeUserSession(userId);
-  // call in routes.js
   cookies().set("session_id", newSessionValue);
 }
 

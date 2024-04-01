@@ -1,6 +1,12 @@
-export async function pbkdf2(password, salt, iterations, keylen) {
+/* 
+Next.js/Edge function method for hasing passwords 
+Using the Web API Crypto feature instead of
+Built-in Node.js Crypto
+*/
+
+export default async function pbkdf2(password, salt, iterations, keylen) {
   const enc = new TextEncoder();
-  const passwordBuffer = enc.endode(password);
+  const passwordBuffer = enc.encode(password);
   const saltBuffer = enc.encode(salt);
 
   const importedKey = await crypto.subtle.importKey(
@@ -8,7 +14,7 @@ export async function pbkdf2(password, salt, iterations, keylen) {
     passwordBuffer,
     { name: "PBKDF2" },
     false,
-    ["deriveBits, deriveKey"],
+    ["deriveBits", "deriveKey"],
   );
 
   const derivedKeyBuffer = await crypto.subtle.deriveBits(
@@ -19,10 +25,12 @@ export async function pbkdf2(password, salt, iterations, keylen) {
       hash: "SHA-256",
     },
     importedKey,
-    keylen * 8,
+    keylen * 8, // keylen in bits
   );
 
-  const derivedKeyArray = new Unit8Array(derivedKeyBuffer);
+  const derivedKeyArray = new Uint8Array(derivedKeyBuffer);
+
+  // Convert to HEX
   let hex = "";
   for (let i = 0; i < derivedKeyArray.length; i++) {
     hex += derivedKeyArray[i].toString(16).padStart(2, "0");
