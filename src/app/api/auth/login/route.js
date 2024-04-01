@@ -10,7 +10,6 @@ export async function POST(request) {
   }
   const data = await request.json();
   const { username, password } = data;
-  console.log(username, password);
 
   const isValidData = username && password;
   if (!isValidData) {
